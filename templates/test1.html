@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bootstrap-select 多选下拉框实现</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link href="https://cdn.bootcss.com/bootstrap-select/1.12.1/css/bootstrap-select.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+</head>
+
+<body>
+<div class="form-group">
+    <label class="col-lg-1 control-label">水果类型：</label>
+    <div class="col-lg-6">
+        <select id="fruits" class="selectpicker show-menu-arrow form-control" multiple>
+            <option value="0">苹果</option>
+            <option value="1">菠萝</option>
+            <option value="2">香蕉</option>
+            <option value="3">火龙果</option>
+            <option value="4">梨子</option>
+            <option value="5">草莓</option>
+            <option value="6">哈密瓜</option>
+        </select>
+    </div>
+    <button class="col-lg-1" onclick="getVal()">获取值</button>
+</div>
+<script>
+    // 获取值
+    function getVal() {
+        console.log($('#fruits').val());
+    }
+
+    // 回显操作
+    // var str = '3,4,5,6';
+    // var arr = str.split(',');
+    // $('#fruits').selectpicker('val', arr);
+</script>
+</body>
+
+</html>

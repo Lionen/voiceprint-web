@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="shortcut icon" type="image/png" href="../static/img/favicon.ico"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <style>
+
+        .main {
+            display: flex;
+            justify-content: space-between;
+
+        }
+
+        .left {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        {#background-color: skyblue;#}
+        }
+
+        .right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        {#background-color: skyblue;#}
+        }
+
+    </style>
+</head>
+<body>
+
+<div>
+    <div align="center" class="body">
+        <h1>未来智能云声纹识别演示</h1>
+        <div class="main">
+            <div class="left">
+                <h2>语音采集</h2>
+                <p>
+                    身份ID:&nbsp;&nbsp;<input type="text" name="ID" id="ID"><br/>
+                </p>
+                <p>
+                    <audio controls></audio>
+                </p>
+
+                <p>
+                    <input onclick="startRecording()" type="button" value="录音"/>
+                    <!--<input onclick="stopRecording()" type="button" value="停止"/>-->
+                    <input onclick="playRecording()" type="button" value="播放"/>
+                    <input onclick="uploadAudio()" type="button" value="提交"/>
+                </p>
+
+                <p>录音时长(秒计算):<span id="end">0</span>s</p>
+            </div>
+
+            <div class="right">
+                <h2>身份比对</h2>
+
+                <p>请选择需要比对的语音片段:</p>
+                <p>
+                <div class="col-lg-4">
+                    <select id="authenticate" class="selectpicker show-menu-arrow form-control" multiple
+                            data-max-options="2">
+                        {% for wav in waves %}
+                            <option value="{{ wav.aid }}">{{ wav.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                </p>
+                <button style="width: 90px;height: 30px" onclick="authenticate()">提交</button>
+
+                <h2 id="result"></h2>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../static/js/recorder.js"></script>
+<script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link href="https://cdn.bootcss.com/bootstrap-select/1.12.1/css/bootstrap-select.min.css" rel="stylesheet">
+{#<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>#}
+<script src="../static/js/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+
+
+<script>
+
+    var recorder;
+    var count = 0;
+    var audio = document.querySelector('audio');
+    var duration;
+
+    function startRecording() {
+        count = 0;
+        audio.currentTime = 0;
+        audio.duration = 0;
+        Recorder.get(function (rec) {
+            recorder = rec;
+            recorder.start('#start');
+            duration = setInterval(function () {
+                count += 1;
+                document.getElementById('end').innerHTML = count;
+                if (count >= 3) {
+                    stopRecording();
+                }
+            }, 1000)
+        });
+        // setTimeout(stopRecording(),1000);
+    }
+
+    function stopRecording() {
+        recorder.play(audio);
+        recorder.stop();
+        clearInterval(duration);
+    }
+
+    function playRecording() {
+        if (audio.getAttribute('src')) {
+            audio.play();
+        } else {
+            alert('请先录音再播放')
+        }
+
+    }
+
+    function uploadAudio() {
+        recorder.upload("/uploadWav/", function (state, e) {
+            switch (state) {
+                case 'uploading':
+                    //var percentComplete = Math.round(e.loaded * 100 / e.total) + '%';
+                    break;
+                case 'ok':
+                    //alert(e.target.responseText);
+                    // alert("上传成功");
+                    break;
+                case 'error':
+                    // alert("上传失败");
+                    break;
+                case 'cancel':
+                    // alert("上传被取消");
+                    break;
+            }
+            window.location.href = "/";
+        });
+    }
+
+    function authenticate() {
+        //构造表单数据
+        $.ajax({
+            url: '/authenticate/',
+            type: 'post',
+            data: {'audioFiles': $('#authenticate').val()},
+            success: function (res) {
+                console.log(res);
+
+                $('#result').html(res.result);
+
+            },
+            error: function () {
+            }
+        })
+
+    }
+</script>
+
+</body>
+</html>
